@@ -941,6 +941,11 @@ glibc_do_configure() {
 		# -march= option tricks build system to infer too
 		# high ISA level: https://sourceware.org/PR27318
 		libc_cv_include_x86_isa_level=no
+		# Explicit override of https://sourceware.org/PR27991
+		# exposes a bug in glibc's configure:
+		# https://sourceware.org/PR27991
+		libc_cv_have_x86_lahf_sahf=no
+		libc_cv_have_x86_movbe=no
 
 		${EXTRA_ECONF}
 	)
@@ -1309,7 +1314,7 @@ glibc_do_src_install() {
 		has ${lsb_ldso_abi} $(get_install_abis) || continue
 
 		if [[ ! -L ${ED}/$(get_abi_LIBDIR ${lsb_ldso_abi})/${lsb_ldso_name} && ! -e ${ED}/$(get_abi_LIBDIR ${lsb_ldso_abi})/${lsb_ldso_name} ]] ; then
-			dosym ${native_ldso_name} "/$(get_abi_LIBDIR ${lsb_ldso_abi})/${lsb_ldso_name}"
+			dosym ${native_ldso_name} "$(alt_prefix)/$(get_abi_LIBDIR ${lsb_ldso_abi})/${lsb_ldso_name}"
 		fi
 	done
 
